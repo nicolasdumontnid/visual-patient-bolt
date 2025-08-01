@@ -44,7 +44,7 @@ interface CalendarDay {
               [class.active]="currentView === 'calendar'"
               (click)="setView('calendar')"
             >
-              Calendrier
+              CalendrieR
             </button>
           </div>
           
