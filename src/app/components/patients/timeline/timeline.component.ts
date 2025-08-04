@@ -121,6 +121,7 @@ interface CalendarDay {
               <span class="current-period">{{ getMonthName(currentMonth) }} {{ currentYear }}</span>
               <button (click)="nextMonth()" [disabled]="isAtMaxDate()">›</button>
               <button (click)="nextYear()" [disabled]="isAtMaxYear()">››</button>
+              <button class="today-btn" (click)="goToToday()">Aujourd'hui</button>
             </div>
             <div class="exam-nav-controls">
               <button (click)="goToPreviousExam()" [disabled]="!hasPreviousExam()">Examen précédent</button>
@@ -136,7 +137,8 @@ interface CalendarDay {
             <div class="calendar-body">
               <div class="calendar-day" *ngFor="let day of getCalendarDays()" 
                    [class.other-month]="!day.isCurrentMonth"
-                   [class.has-exams]="day.exams.length > 0">
+                   [class.has-exams]="day.exams.length > 0"
+                   [class.today]="isToday(day.date)">
                 <span class="day-number">{{ day.number }}</span>
                 <div class="day-exams">
                   <span class="exam-badge" 
@@ -364,6 +366,9 @@ interface CalendarDay {
       gap: 1px;
       background: #dee2e6;
       margin-bottom: 1px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .sector-column, .year-column {
@@ -381,16 +386,27 @@ interface CalendarDay {
       margin-bottom: 1px;
     }
 
-    .sector-label {
+    .grid-row:nth-child(even) .sector-label,
+    .grid-row:nth-child(even) .year-cell {
       background: #f8f9fa;
+    }
+
+    .grid-row:nth-child(odd) .sector-label,
+    .grid-row:nth-child(odd) .year-cell {
+      background: white;
+    }
+
+    .sector-label {
       padding: 0.75rem;
       font-weight: 500;
       display: flex;
       align-items: center;
+      position: sticky;
+      left: 0;
+      z-index: 5;
     }
 
     .year-cell {
-      background: white;
       padding: 0.75rem;
       display: flex;
       gap: 0.25rem;
@@ -468,6 +484,15 @@ interface CalendarDay {
       cursor: not-allowed;
     }
 
+    .today-btn {
+      background: #28a745;
+      margin-left: 1rem;
+    }
+
+    .today-btn:hover:not(:disabled) {
+      background: #218838;
+    }
+
     .current-period {
       font-weight: 600;
       font-size: 1.1rem;
@@ -512,6 +537,16 @@ interface CalendarDay {
 
     .calendar-day.has-exams {
       background: #fff3cd;
+    }
+
+    .calendar-day.today {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+    }
+
+    .calendar-day.today.has-exams {
+      background: #e8f5e8;
+      border-color: #4caf50;
     }
 
     .day-number {
@@ -858,4 +893,16 @@ export class TimelineComponent implements OnInit, OnChanges {
     return Math.min(a, b);
   }
 
+  goToToday() {
+    const today = new Date();
+    this.currentMonth = today.getMonth();
+    this.currentYear = today.getFullYear();
+  }
+
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  }
 }

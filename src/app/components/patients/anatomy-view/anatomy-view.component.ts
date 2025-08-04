@@ -10,10 +10,17 @@ import { Patient, AnatomicalRegion, MedicalExam } from '../../../models/patient.
     <div class="anatomy-view-card">
       <h2>Vue Anatomique</h2>
       
+      <div class="anatomy-controls">
+        <label class="organs-toggle">
+          <input type="checkbox" [(ngModel)]="showOrgans" (change)="onToggleOrgans()">
+          <span>Afficher les organes</span>
+        </label>
+      </div>
+      
       <div class="anatomy-container">
         <div class="body-diagram" [class]="patient.gender === 'F' ? 'female' : 'male'">
           <!-- SVG du corps humain -->
-          <svg viewBox="0 0 200 400" class="body-svg">
+          <svg viewBox="0 0 200 400" class="body-svg" [class.show-organs]="showOrgans">
             <!-- Tête -->
             <circle cx="100" cy="40" r="25" 
                     class="body-part head"
@@ -93,6 +100,57 @@ import { Patient, AnatomicalRegion, MedicalExam } from '../../../models/patient.
                   [class.selected]="isRegionSelected('Colonne vertébrale')"
                   (click)="showExamsForRegion('Colonne vertébrale')">
             </line>
+            
+            <!-- Organes (visibles seulement si showOrgans est true) -->
+            <g class="organs" [style.opacity]="showOrgans ? 1 : 0">
+              <!-- Cerveau -->
+              <ellipse cx="100" cy="35" rx="20" ry="15" 
+                       class="organ brain"
+                       [class.has-exam]="hasExamForRegion('Cerveau')"
+                       [class.selected]="isRegionSelected('Cerveau')"
+                       (click)="showExamsForRegion('Cerveau')">
+              </ellipse>
+              
+              <!-- Foie -->
+              <ellipse cx="110" cy="160" rx="25" ry="20" 
+                       class="organ liver"
+                       [class.has-exam]="hasExamForRegion('Foie')"
+                       [class.selected]="isRegionSelected('Foie')"
+                       (click)="showExamsForRegion('Foie')">
+              </ellipse>
+              
+              <!-- Reins -->
+              <ellipse cx="85" cy="190" rx="8" ry="15" 
+                       class="organ kidney"
+                       [class.has-exam]="hasExamForRegion('Reins')"
+                       [class.selected]="isRegionSelected('Reins')"
+                       (click)="showExamsForRegion('Reins')">
+              </ellipse>
+              <ellipse cx="115" cy="190" rx="8" ry="15" 
+                       class="organ kidney"
+                       [class.has-exam]="hasExamForRegion('Reins')"
+                       [class.selected]="isRegionSelected('Reins')"
+                       (click)="showExamsForRegion('Reins')">
+              </ellipse>
+            </g>
+            
+            <!-- Badges d'examens -->
+            <g class="exam-badges">
+              <g *ngFor="let region of getRegionsWithExams()" 
+                 [attr.transform]="'translate(' + getRegionPosition(region.name).x + ',' + getRegionPosition(region.name).y + ')'">
+                <circle r="8" 
+                        [attr.fill]="getRegionColor(region.name)"
+                        class="exam-badge"
+                        (click)="showExamsForRegion(region.name)">
+                </circle>
+                <text text-anchor="middle" 
+                      dy="4" 
+                      class="badge-text"
+                      (click)="showExamsForRegion(region.name)">
+                  {{ getExamCountForRegion(region.name) }}
+                </text>
+              </g>
+            </g>
           </svg>
         </div>
         
@@ -124,6 +182,23 @@ import { Patient, AnatomicalRegion, MedicalExam } from '../../../models/patient.
       font-weight: 600;
       border-bottom: 2px solid #28a745;
       padding-bottom: 0.5rem;
+    }
+
+    .anatomy-controls {
+      margin-bottom: 1rem;
+    }
+
+    .organs-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #495057;
+    }
+
+    .organs-toggle input[type="checkbox"] {
+      margin: 0;
     }
 
     .anatomy-container {
@@ -182,6 +257,62 @@ import { Patient, AnatomicalRegion, MedicalExam } from '../../../models/patient.
     .spine {
       stroke-width: 3;
       fill: none;
+    }
+
+    .organs {
+      transition: opacity 0.3s ease;
+    }
+
+    .organ {
+      fill: rgba(255, 0, 0, 0.3);
+      stroke: #dc3545;
+      stroke-width: 1;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .organ.brain {
+      fill: rgba(255, 192, 203, 0.5);
+      stroke: #e91e63;
+    }
+
+    .organ.liver {
+      fill: rgba(139, 69, 19, 0.5);
+      stroke: #8b4513;
+    }
+
+    .organ.kidney {
+      fill: rgba(128, 0, 128, 0.5);
+      stroke: #800080;
+    }
+
+    .organ:hover {
+      fill-opacity: 0.7;
+      stroke-width: 2;
+    }
+
+    .exam-badges {
+      pointer-events: all;
+    }
+
+    .exam-badge {
+      cursor: pointer;
+      stroke: white;
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    .exam-badge:hover {
+      r: 10;
+      stroke-width: 3;
+    }
+
+    .badge-text {
+      fill: white;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      pointer-events: none;
     }
 
     .exam-indicators {
@@ -267,8 +398,13 @@ export class AnatomyViewComponent {
   @Input() patient!: Patient;
   @Input() selectedRegions: AnatomicalRegion[] = [];
   
+  showOrgans = false;
   selectedRegion = '';
   selectedRegionExams: MedicalExam[] = [];
+
+  onToggleOrgans() {
+    // Logique pour afficher/masquer les organes
+  }
 
   hasExamForRegion(regionName: string): boolean {
     return this.patient.medicalHistory.some(exam => 
@@ -288,5 +424,61 @@ export class AnatomyViewComponent {
     this.selectedRegionExams = this.patient.medicalHistory.filter(exam => 
       exam.anatomicalRegion === regionName
     );
+  }
+
+  getRegionsWithExams(): { name: string }[] {
+    const regionsWithExams = new Set<string>();
+    this.patient.medicalHistory.forEach(exam => {
+      if (this.isRegionSelected(exam.anatomicalRegion)) {
+        regionsWithExams.add(exam.anatomicalRegion);
+      }
+    });
+    return Array.from(regionsWithExams).map(name => ({ name }));
+  }
+
+  getExamCountForRegion(regionName: string): number {
+    return this.patient.medicalHistory.filter(exam => 
+      exam.anatomicalRegion === regionName && this.isRegionSelected(regionName)
+    ).length;
+  }
+
+  getRegionPosition(regionName: string): { x: number, y: number } {
+    const positions: { [key: string]: { x: number, y: number } } = {
+      'Tête': { x: 100, y: 20 },
+      'Cou': { x: 100, y: 55 },
+      'Cerveau': { x: 120, y: 35 },
+      'Poumons': { x: 80, y: 120 },
+      'Cœur': { x: 120, y: 110 },
+      'Foie': { x: 130, y: 160 },
+      'Abdomen': { x: 80, y: 180 },
+      'Reins': { x: 70, y: 190 },
+      'Bras': { x: 40, y: 140 },
+      'Jambes': { x: 80, y: 260 },
+      'Colonne vertébrale': { x: 120, y: 140 },
+      'Genou': { x: 90, y: 280 },
+      'Yeux': { x: 120, y: 30 },
+      'Oreilles': { x: 75, y: 40 },
+      'Poignet': { x: 30, y: 180 },
+      'Cheville': { x: 90, y: 320 }
+    };
+    return positions[regionName] || { x: 100, y: 200 };
+  }
+
+  getRegionColor(regionName: string): string {
+    const colors: { [key: string]: string } = {
+      'Neurologie': '#9c27b0',
+      'Cardiologie': '#f44336',
+      'Pneumologie': '#2196f3',
+      'Gastroentérologie': '#ff9800',
+      'Néphrologie': '#4caf50',
+      'Orthopédie': '#795548',
+      'Ophtalmologie': '#00bcd4',
+      'ORL': '#ffeb3b',
+      'Gynécologie': '#e91e63'
+    };
+    
+    // Trouver le secteur de la région
+    const region = this.selectedRegions.find(r => r.name === regionName);
+    return colors[region?.sector || 'Orthopédie'] || '#607d8b';
   }
 }
