@@ -482,4 +482,12 @@ export class AnatomyViewComponent {
     const region = this.selectedRegions.find(r => r.name === regionName);
     return colors[region?.sector || 'Orthopédie'] || '#607d8b';
   }
+
+  openExamModal(exam: MedicalExam) {
+    this.selectedExam = exam;
+  }
+
+  closeExamModal() {
+    this.selectedExam = null;
+  }
 }

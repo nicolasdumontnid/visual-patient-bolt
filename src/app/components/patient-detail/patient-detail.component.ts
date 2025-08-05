@@ -65,7 +65,7 @@ import { TimelineComponent } from '../patients/timeline/timeline.component';
               </div>
               
               <div class="filter-footer">
-                <button class="validate-btn" (click)="validateFilters()">Valider la sélection</button>
+                <button class="validate-btn" (click)="validateFilters()">Appliquer les filtres</button>
               </div>
             </div>
           </div>
