@@ -109,7 +109,7 @@ type ViewMode = 'cards' | 'table';
                 <td>{{ patient.age }}</td>
                 <td>{{ patient.bloodType }}</td>
                 <td>{{ getLastExam(patient)?.title ?? '-' }}</td>
-                <td>{{ (getLastExam(patient)?.date | date:'dd/MM/yyyy') ?? '-' }}</td>
+                <td>{{ getLastExam(patient) ? (getLastExam(patient)!.date | date:'dd/MM/yyyy') : '-' }}</td>
               </tr>
             </tbody>
           </table>
