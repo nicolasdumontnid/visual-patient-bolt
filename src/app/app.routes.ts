@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
-import { PatientsComponent } from './components/patients/patients.component';
 import { PatientSearchComponent } from './components/patient-search/patient-search.component';
 import { PatientDetailComponent } from './components/patient-detail/patient-detail.component';
 

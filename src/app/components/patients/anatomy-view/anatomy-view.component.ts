@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Patient, AnatomicalRegion, MedicalExam } from '../../../models/patient.model';
 
 @Component({
   selector: 'app-anatomy-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="anatomy-view-card">
       <h2>Vue Anatomique</h2>
