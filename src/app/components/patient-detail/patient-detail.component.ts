@@ -7,11 +7,12 @@ import { PatientService } from '../../services/patient.service';
 import { PatientInfoComponent } from '../patients/patient-info/patient-info.component';
 import { AnatomyViewComponent } from '../patients/anatomy-view/anatomy-view.component';
 import { TimelineComponent } from '../patients/timeline/timeline.component';
+import { PatientViewComponent } from '../patients/patient-view/patient-view.component';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, PatientInfoComponent, AnatomyViewComponent, TimelineComponent],
+  imports: [CommonModule, FormsModule, PatientInfoComponent, AnatomyViewComponent, TimelineComponent, PatientViewComponent],
   template: `
     <div class="patient-detail-container" *ngIf="patient">
       <div class="patient-header">
@@ -90,6 +91,10 @@ import { TimelineComponent } from '../patients/timeline/timeline.component';
               [patient]="patient" 
               [selectedRegions]="getSelectedRegions()">
             </app-timeline>
+          </div>
+          
+          <div class="patient-view-section">
+            <app-patient-view [patient]="patient"></app-patient-view>
           </div>
         </div>
       </div>
@@ -338,7 +343,7 @@ import { TimelineComponent } from '../patients/timeline/timeline.component';
     .patient-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: auto 1fr auto;
       gap: 0;
       min-height: 80vh;
     }
@@ -361,6 +366,12 @@ import { TimelineComponent } from '../patients/timeline/timeline.component';
       grid-row: 2;
     }
 
+    .patient-view-section {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      margin-top: 2rem;
+    }
+
     .not-found {
       min-height: 100vh;
       display: flex;
@@ -379,7 +390,7 @@ import { TimelineComponent } from '../patients/timeline/timeline.component';
     @media (max-width: 1024px) {
       .patient-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto 1fr;
+        grid-template-rows: auto auto 1fr auto;
       }
 
       .patient-info-section {
@@ -396,6 +407,11 @@ import { TimelineComponent } from '../patients/timeline/timeline.component';
       .timeline-section {
         grid-column: 1;
         grid-row: 3;
+      }
+
+      .patient-view-section {
+        grid-column: 1;
+        grid-row: 4;
       }
     }
 
