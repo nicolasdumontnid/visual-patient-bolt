@@ -402,6 +402,7 @@ export class AnatomyViewComponent {
   showOrgans = false;
   selectedRegion = '';
   selectedRegionExams: MedicalExam[] = [];
+  selectedExam: MedicalExam | null = null;
 
   onToggleOrgans() {
     // Logique pour afficher/masquer les organes
